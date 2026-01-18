@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  bakery-user-db:
+    image: postgres:16.11-alpine
+    container_name: bakery-user-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: bakery-user-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - bakery_user_db:/var/lib/postgresql/data
+
+  bakery-booking-db:
+    image: postgres:16.11-alpine
+    container_name: bakery-booking-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: bakery-booking-db
+    ports:
+      - "5434:5432"
+    volumes:
+      - bakery_booking_db:/var/lib/postgresql/data
+
+  user-service:
+    image: nntan041299/user-service:latest
+    container_name: user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - bakery-user-db
+    env_file:
+      - .user-service-env
+
+volumes:
+  bakery_user_db:
+  bakery_booking_db:
